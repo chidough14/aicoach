@@ -1,9 +1,24 @@
 import { Text, View, Image, StyleSheet, TouchableOpacity } from "react-native";
 import Colors from '../constants/Colors'
 import { useRouter } from "expo-router";
+import { onAuthStateChanged } from "@firebase/auth";
+import { auth, db } from "../config/firebase";
+import { doc, DocumentData, getDoc } from "firebase/firestore";
+import { useContext } from "react";
+import { UserDetailContext } from "../context/UserDetailContext";
 
 export default function Index() {
   const router = useRouter()
+    const { userDetail, setUserDetail } = useContext(UserDetailContext)
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const results = await getDoc(doc(db, 'users', user?.email))
+      console.log("onAuthStateChanged", results.data())
+      setUserDetail(results.data())
+      router.replace('/(tabs)/home')
+    }
+  })
 
   return (
     <View
@@ -51,17 +66,17 @@ export default function Index() {
           }}
         >Transform your ideas into engaging educational cotent with AI very effortlessly 📚📑</Text>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.button}
           onPress={() => router.push('/auth/signUp')}
         >
-          <Text style={[styles.buttonText, {color: Colors.PRIMARY}]}>Get Started</Text>
+          <Text style={[styles.buttonText, { color: Colors.PRIMARY }]}>Get Started</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => router.push('/auth/signIn')}
           style={[
-            styles.button, 
+            styles.button,
             {
               backgroundColor: Colors.PRIMARY,
               borderWidth: 1,
@@ -69,7 +84,7 @@ export default function Index() {
             }
           ]}
         >
-          <Text style={[styles.buttonText, {color: Colors.WHITE}]}>Already have an account?</Text>
+          <Text style={[styles.buttonText, { color: Colors.WHITE }]}>Already have an account?</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -89,3 +104,4 @@ const styles = StyleSheet.create({
     fontFamily: 'outfit'
   }
 })
+

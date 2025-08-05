@@ -1,11 +1,47 @@
 import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, Pressable } from 'react-native'
-import React from 'react'
+import React, { useContext, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Colors from '@/constants/Colors'
+// import Colors from '@/constants/Colors'
 import { useRouter } from 'expo-router'
+import Colors from '../../constants/Colors'
+import { createUserWithEmailAndPassword } from '@firebase/auth'
+import { auth, db } from '../../config/firebase'
+import { setDoc, doc } from "firebase/firestore";
+import { UserDetailContext } from '../../context/UserDetailContext'
 
 export default function SignUp() {
   const router = useRouter()
+  const [fullname, setFullname] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const { userDetail, setUserDetail } = useContext(UserDetailContext)
+
+  const createNewAccount = async () => {
+    await createUserWithEmailAndPassword(auth, email, password)
+      .then(async (response) => {
+        const user = response.user
+        await saveUser(user)
+      })
+      .catch((e) => {
+        console.log(e)
+      })
+  }
+
+  const saveUser = async (user) => {
+    const data = {
+      name: fullname,
+      email: email,
+      member: false,
+      uid: user.uid
+    }
+
+    await setDoc(doc(db, 'users', email), data)
+    
+    setUserDetail(data)
+
+    //Navigate to home
+  }
+
 
   return (
     <SafeAreaView
@@ -28,17 +64,20 @@ export default function SignUp() {
       <TextInput
         placeholder='Full Name'
         style={styles.textInput}
+        onChangeText={(value) => setFullname(value)}
       />
 
       <TextInput
         placeholder='Email'
         style={styles.textInput}
+        onChangeText={(value) => setEmail(value)}
       />
 
       <TextInput
         placeholder='Password'
         style={styles.textInput}
         secureTextEntry={true}
+        onChangeText={(value) => setPassword(value)}
       />
 
       <TouchableOpacity
@@ -49,7 +88,7 @@ export default function SignUp() {
           marginTop: 25,
           borderRadius: 10
         }}
-        // onPress={() => router.push('/auth/signIn')}
+        onPress={createNewAccount}
       >
         <Text
           style={{
@@ -69,9 +108,9 @@ export default function SignUp() {
           marginTop: 20
         }}
       >
-        <Text style={{fontFamily: 'outfit'}}>Already have an account? </Text>
+        <Text style={{ fontFamily: 'outfit' }}>Already have an account? </Text>
         <Pressable onPress={() => router.push('/auth/signIn')}>
-          <Text style={{color: Colors.PRIMARY, fontFamily: 'outfit-bold'}}>Sign in here</Text>
+          <Text style={{ color: Colors.PRIMARY, fontFamily: 'outfit-bold' }}>Sign in here</Text>
         </Pressable>
       </View>
     </SafeAreaView>

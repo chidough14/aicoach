@@ -1,11 +1,44 @@
-import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, Pressable } from 'react-native'
-import React from 'react'
+import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, Pressable, ToastAndroid, ActivityIndicator } from 'react-native'
+import React, { useContext, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Colors from '@/constants/Colors'
+// import Colors from '@/constants/Colors'
 import { useRouter } from 'expo-router'
+import Colors from '../../constants/Colors'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { auth, db } from '../../config/firebase'
+import { doc, getDoc } from 'firebase/firestore'
+import { UserDetailContext } from '../../context/UserDetailContext'
 
 export default function SignUp() {
   const router = useRouter()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const { userDetail, setUserDetail } = useContext(UserDetailContext)
+  const [loading, setLoading] = useState(false)
+  
+
+  const onSignInClick = () => {
+    setLoading(true)
+    signInWithEmailAndPassword(auth, email, password)
+      .then(async (userCredential) => {
+        // Signed in 
+        const user = userCredential.user
+        await getUserDetail()
+        setLoading(false)
+        // router.replace('/(tabs)/home')
+      })
+      .catch((error) => {
+        console.log(error)
+        setLoading(false)
+        ToastAndroid.show(error.message, ToastAndroid.SHORT)
+      });
+  }
+
+  const getUserDetail = async () => {
+    const results = await getDoc(doc(db, 'users', email))
+    console.log("getUserDetail", results.data())
+    setUserDetail(results.data())
+  }
 
   return (
     <SafeAreaView
@@ -28,11 +61,13 @@ export default function SignUp() {
       <TextInput
         placeholder='Email'
         style={styles.textInput}
+        onChangeText={(value) => setEmail(value)}
       />
 
       <TextInput
         placeholder='Password'
         style={styles.textInput}
+        onChangeText={(value) => setPassword(value)}
         secureTextEntry={true}
       />
 
@@ -44,16 +79,21 @@ export default function SignUp() {
           marginTop: 25,
           borderRadius: 10
         }}
-        // onPress={() => router.push('/auth/signIn')}
+        onPress={onSignInClick}
+        disabled={loading}
       >
-        <Text
-          style={{
-            fontFamily: 'outfit',
-            fontSize: 20,
-            color: Colors.WHITE,
-            textAlign: 'center'
-          }}
-        >Log In</Text>
+        {
+          !loading ? (
+            <Text
+              style={{
+                fontFamily: 'outfit',
+                fontSize: 20,
+                color: Colors.WHITE,
+                textAlign: 'center'
+              }}
+            >Log In</Text>
+          ) : <ActivityIndicator size={'large'}  color={Colors.WHITE}/>
+        }
       </TouchableOpacity>
 
       <View
@@ -64,9 +104,9 @@ export default function SignUp() {
           marginTop: 20
         }}
       >
-        <Text style={{fontFamily: 'outfit'}}>Don't have an account? </Text>
+        <Text style={{ fontFamily: 'outfit' }}>Don't have an account? </Text>
         <Pressable onPress={() => router.push('/auth/signIn')}>
-          <Text style={{color: Colors.PRIMARY, fontFamily: 'outfit-bold'}}>Sign up here</Text>
+          <Text style={{ color: Colors.PRIMARY, fontFamily: 'outfit-bold' }}>Sign up here</Text>
         </Pressable>
       </View>
     </SafeAreaView>
