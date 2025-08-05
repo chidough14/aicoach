@@ -9,7 +9,7 @@ import { UserDetailContext } from "../context/UserDetailContext";
 
 export default function Index() {
   const router = useRouter()
-    const { userDetail, setUserDetail } = useContext(UserDetailContext)
+  const { userDetail, setUserDetail } = useContext(UserDetailContext)
 
   onAuthStateChanged(auth, async (user) => {
     if (user) {
