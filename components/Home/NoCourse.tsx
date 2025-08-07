@@ -1,8 +1,11 @@
 import { View, Text, Image } from 'react-native'
 import React from 'react'
 import Button from './Shared/Button'
+import { useRouter } from 'expo-router'
 
 export default function NoCourse() {
+  const router = useRouter()
+
   return (
     <View
       style={{
@@ -29,11 +32,15 @@ export default function NoCourse() {
 
       <Button
         text="Create New Course"
+        onPress={() => router.push('/addCourse')}
+        loading={false}
       />
 
       <Button
         text="Explore exixting courses"
         type='outline'
+        onPress={() => { }}
+        loading={false}
       />
     </View>
   )

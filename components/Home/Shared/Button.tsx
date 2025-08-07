@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, GestureResponderEvent } from 'react-native'
+import { View, Text, TouchableOpacity, GestureResponderEvent, ActivityIndicator } from 'react-native'
 import React from 'react'
 import Colors from '../../../constants/Colors'
 
@@ -6,9 +6,10 @@ type ButtonProps = {
   text: string;
   type?: 'fill' | 'outline';
   onPress: (event: GestureResponderEvent) => void;
+  loading: boolean
 };
 
-export default function Button({ text, type = "fill", onPress }) {
+export default function Button({ text, type = "fill", onPress, loading }: ButtonProps) {
   return (
     <TouchableOpacity
       style={{
@@ -21,14 +22,21 @@ export default function Button({ text, type = "fill", onPress }) {
         borderColor: Colors.PRIMARY
       }}
       onPress={onPress}
+      disabled={loading}
     >
-      <Text
-        style={{
-          textAlign: 'center',
-          fontSize: 18,
-          color: type == "fill" ? Colors.WHITE : Colors.PRIMARY
-        }}
-      >{text}</Text>
+      {
+        !loading ? (
+          <Text
+            style={{
+              textAlign: 'center',
+              fontSize: 18,
+              color: type == "fill" ? Colors.WHITE : Colors.PRIMARY
+            }}
+          >{text}</Text>
+        ) : (
+          <ActivityIndicator size={'small'} color={type == "fill" ? Colors.WHITE : Colors.PRIMARY} />
+        )
+      }
     </TouchableOpacity>
   )
 }

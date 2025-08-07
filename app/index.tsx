@@ -1,6 +1,6 @@
 import { Text, View, Image, StyleSheet, TouchableOpacity } from "react-native";
 import Colors from '../constants/Colors'
-import { useRouter } from "expo-router";
+import { usePathname, useRouter } from "expo-router";
 import { onAuthStateChanged } from "@firebase/auth";
 import { auth, db } from "../config/firebase";
 import { doc, DocumentData, getDoc } from "firebase/firestore";
@@ -10,12 +10,16 @@ import { UserDetailContext } from "../context/UserDetailContext";
 export default function Index() {
   const router = useRouter()
   const { userDetail, setUserDetail } = useContext(UserDetailContext)
+  const pathname = usePathname();
 
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       const results = await getDoc(doc(db, 'users', user?.email))
       setUserDetail(results.data())
-      router.replace('/(tabs)/home')
+      
+      if (pathname === '/' || pathname === '/index') {
+        router.replace('/(tabs)/home');
+      }
     }
   })
 
