@@ -1,7 +1,7 @@
 import { View, Text, TextInput, StyleSheet, Pressable, ScrollView } from 'react-native'
 import React, { useContext, useState } from 'react'
 import Colors from '../../constants/Colors'
-import Button from '../../components/Home/Shared/Button'
+import Button from '../../components/Shared/Button'
 import { generateCoursesFromTopics, getGeminiResponse } from '../../config/Gemini'
 import Prompt from '../../constants/Prompt'
 import { extractJson, extractJsonArray } from '../../lib/utils'
