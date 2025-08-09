@@ -25,17 +25,38 @@
 // }
 
 import { FlatList, View, Text } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
-import Intro from '../../components/CourseView/Intro';
-import Colors from '../../constants/Colors'; // a new small component for a chapter
-import ChapterItem from '../../components/CourseView/ChapterItem';
+import Intro from '../../../components/CourseView/Intro';
+import Colors from '../../../constants/Colors'; // a new small component for a chapter
+import ChapterItem from '../../../components/CourseView/ChapterItem';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../../config/firebase';
 
 export default function CourseView() {
-  const { courseParams } = useLocalSearchParams();
-  const course = typeof courseParams === 'string'
-    ? JSON.parse(courseParams)
-    : JSON.parse(Array.isArray(courseParams) ? courseParams[0] : '{}');
+  const { courseParams, courseId } = useLocalSearchParams();
+  const [course, setCourse] = useState(undefined)
+  // const course = typeof courseParams === 'string'
+  //   ? JSON.parse(courseParams)
+  //   : JSON.parse(Array.isArray(courseParams) ? courseParams[0] : '{}');
+
+  const getCourseById = async () => {
+    const id = Array.isArray(courseId) ? courseId[0] : courseId;
+    const docRef = await getDoc(doc(db, 'Courses', id));
+
+    const courseData = docRef.data()
+    setCourse(courseData)
+  }
+
+  useEffect(() => {
+    if (!courseParams) {
+      getCourseById()
+    } else {
+       setCourse(
+         JSON.parse(Array.isArray(courseParams) ? courseParams[0] : courseParams || '{}')
+       )
+    }
+  }, [courseId])
 
   return (
     <FlatList
@@ -44,7 +65,12 @@ export default function CourseView() {
       data={course?.chapters || []}
       keyExtractor={(_, index) => index.toString()}
       renderItem={({ item, index }) => (
-        <ChapterItem item={item} index={index} />
+        <ChapterItem
+          item={item}
+          index={index}
+          docId={course.docId}
+          completedChapter={course?.completedChapter}
+        />
       )}
       ListHeaderComponent={() => (
         <View>

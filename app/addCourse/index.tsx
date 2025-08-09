@@ -61,10 +61,12 @@ export default function AddCourse() {
         console.log("🟢 Parsed JSON:", parsed);
         // You can now store parsed.courses
         parsed.courses.forEach(async (course) => {
-          await setDoc(doc(db, 'Courses', Date.now().toString()), {
+          const docId = Date.now().toString()
+          await setDoc(doc(db, 'Courses', docId), {
             ...course,
             createdOn: new Date(),
-            createdBy: userDetail?.email
+            createdBy: userDetail?.email,
+            docId: docId
           })
         })
 

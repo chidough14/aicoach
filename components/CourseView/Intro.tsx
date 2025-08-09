@@ -14,7 +14,7 @@ export default function Intro({ course }: any) {
   const handlePress = async () => {
    
   }
-  
+
   return (
     <View>
       {/* <Pressable style={{position: 'absolute'}}>
@@ -22,7 +22,7 @@ export default function Intro({ course }: any) {
       </Pressable> */}
 
       <Image
-        source={imageAssets[course.banner_image]}
+        source={imageAssets[course?.banner_image]}
         style={{
           width: '100%',
           height: 280
@@ -41,13 +41,13 @@ export default function Intro({ course }: any) {
             marginTop: 5
           }}
         >
-          <Ionicons name='book-outline' size={24} color={"black"} />
-          <Text style={{ fontFamily: 'outfit' }}>{course?.chapters?.length} Chapters</Text>
+          <Ionicons name='book-outline' size={24} color={Colors.PRIMARY} />
+          <Text style={{ fontFamily: 'outfit', color: Colors.PRIMARY }}>{course?.chapters?.length} Chapters</Text>
         </View>
 
         <Text style={{ fontFamily: 'outfit-bold', fontSize: 18, marginTop: 10 }}>Description:</Text>
 
-        <Text style={{ fontFamily: 'outfit', fontSize: 18, color: Colors.GRAY }}>{course.description}</Text>
+        <Text style={{ fontFamily: 'outfit', fontSize: 18, color: Colors.GRAY }}>{course?.description}</Text>
 
         <Button
           text='Start Now'
