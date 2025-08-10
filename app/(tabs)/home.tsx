@@ -1,4 +1,4 @@
-import { View, Text, Platform, FlatList, ListRenderItemInfo } from 'react-native'
+import { View, Text, Platform, FlatList, ListRenderItemInfo, Image } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import Header from '../../components/Home/header'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -14,6 +14,7 @@ import CourseProgress from '../../components/Home/CourseProgress'
 
 export default function Home() {
   const [courseList, setCourseList] = useState([])
+  const [loading, setLoading] = useState(false)
   const { userDetail, setUserDetail } = useContext(UserDetailContext)
   const router = useRouter()
 
@@ -27,6 +28,7 @@ export default function Home() {
   // }
 
   const getCourseList = async () => {
+    setLoading(true)
     const q = query(collection(db, 'Courses'), where("createdBy", "==", userDetail?.email))
     const querySnapshot = await getDocs(q)
 
@@ -35,12 +37,22 @@ export default function Home() {
       ...doc.data(),
     }))
 
+    setCourseList(fetchedCourses)
+
     // Remove duplicates based on 'id'
-    setCourseList((prevCourses) => {
-      const existingIds = new Set(prevCourses.map(course => course.id))
-      const newCourses = fetchedCourses.filter(course => !existingIds.has(course.id))
-      return [...prevCourses, ...newCourses]
-    })
+    // setCourseList((prevCourses) => {
+    //   const updatedCourses = fetchedCourses.map(fc => {
+    //     const existing = prevCourses.find(pc => pc.id === fc.id)
+    //     return existing ? { ...existing, ...fc } : fc
+    //   })
+
+    //   // Optionally merge with old ones not in fetched list
+    //   const notFetched = prevCourses.filter(pc => !fetchedCourses.some(fc => fc.id === pc.id))
+
+    //   return [...updatedCourses, ...notFetched]
+    // })
+
+    setLoading(false)
   }
 
 
@@ -51,6 +63,8 @@ export default function Home() {
   return (
     <FlatList
       data={[]}
+      onRefresh={() => getCourseList()}
+      refreshing={loading}
       ListHeaderComponent={
         <SafeAreaView
           style={{
@@ -60,14 +74,20 @@ export default function Home() {
             backgroundColor: Colors.WHITE
           }}
         >
-          <Header />
-          {courseList?.length === 0 ?
-            <NoCourse /> :
-            <View>
-              <CourseProgress courseList={courseList} />
-              <PracticeSection />
-              <CourseList courseList={courseList} />
-            </View>}
+          
+            <Image
+              source={require('../../assets/images/wave.png')}
+              style={{position: 'absolute'}}
+            />
+            <Header />
+            {courseList?.length === 0 ?
+              <NoCourse /> :
+              <View>
+                <CourseProgress courseList={courseList} />
+                <PracticeSection />
+                <CourseList courseList={courseList} />
+              </View>}
+         
         </SafeAreaView>
       }
       renderItem={function (info: ListRenderItemInfo<any>): React.ReactElement | null {
