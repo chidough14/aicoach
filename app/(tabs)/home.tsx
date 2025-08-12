@@ -18,15 +18,6 @@ export default function Home() {
   const { userDetail, setUserDetail } = useContext(UserDetailContext)
   const router = useRouter()
 
-  // const getCourseList = async () => {
-  //   setCourseList([])
-  //   const q = query(collection(db, 'Courses'), where("createdBy", "==", userDetail?.email))
-  //   const querySnapshot = await getDocs(q)
-
-  //   const courses = querySnapshot.docs.map((doc) => doc.data())
-  //   setCourseList(courses)
-  // }
-
   const getCourseList = async () => {
     setLoading(true)
     const q = query(collection(db, 'Courses'), where("createdBy", "==", userDetail?.email))
