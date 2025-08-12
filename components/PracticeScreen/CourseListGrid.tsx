@@ -22,7 +22,15 @@ export default function CourseListGrid({ courseList, option }: any) {
           courseParams: JSON.stringify(course)
         }
       })
+    } else if (option.name == 'Question & Ans') {
+      router.push({
+        pathname: '/questionAnswer',
+        params: {
+          courseParams: JSON.stringify(course)
+        }
+      })
     }
+    
   }
 
   return (
