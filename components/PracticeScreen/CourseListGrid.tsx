@@ -15,6 +15,13 @@ export default function CourseListGrid({ courseList, option }: any) {
           courseParams: JSON.stringify(course)
         }
       })
+    } else if (option.name == 'Flashcards') {
+      router.push({
+        pathname: '/flashcards',
+        params: {
+          courseParams: JSON.stringify(course)
+        }
+      })
     }
   }
 
