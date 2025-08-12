@@ -1,13 +1,15 @@
 import { View, Text, Image, FlatList, Pressable, StyleSheet } from 'react-native'
 import React, { useState } from 'react'
-import { useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import Colors from '../../constants/Colors'
+import Ionicons from '@expo/vector-icons/Ionicons'
 
 export default function QuestionAnswer() {
   const { courseParams } = useLocalSearchParams()
   const course = JSON.parse(Array.isArray(courseParams) ? courseParams[0] : courseParams || '{}')
   const qaList = course?.qa
   const [selectedQuestion, setSelectedQuestion] = useState(null)
+  const router = useRouter()
 
   const onQuestionSelect = (index) => {
     if (selectedQuestion == index) {
@@ -27,21 +29,34 @@ export default function QuestionAnswer() {
       <View
         style={{ position: 'absolute', padding: 25, width: "100%", marginTop: 35 }}
       >
-        <Text
-          style={{ fontFamily: 'outfit-bold', fontSize: 28, color: Colors.WHITE }}
-        >Questions & Answers</Text>
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: 7,
+            alignItems: 'center'
+          }}
+        >
+          <Pressable onPress={() => router.back()}>
+            <Ionicons name='arrow-back' size={30} color={Colors.WHITE} />
+          </Pressable>
 
+          <Text
+            style={{ fontFamily: 'outfit-bold', fontSize: 28, color: Colors.WHITE }}
+          >Questions & Answers</Text>
+        </View>
         <Text
           style={{ fontFamily: 'outfit', fontSize: 20, color: Colors.WHITE }}
         >{course?.courseTitle}</Text>
+
 
         <FlatList
           data={qaList}
           // numColumns={2}
           // style={{ padding: 20 }}
           renderItem={({ item, index }) => (
-            <Pressable 
-              style={styles.card} 
+            <Pressable
+              style={styles.card}
               onPress={() => onQuestionSelect(index)}
             >
               <Text
@@ -52,10 +67,10 @@ export default function QuestionAnswer() {
               {
                 selectedQuestion == index && (
                   <View style={{ borderTopWidth: 1, marginVertical: 10 }}>
-                    <Text 
+                    <Text
                       style={{ fontFamily: 'outfit', fontSize: 16, color: Colors.GREEN, marginBottom: 10 }}
                     >
-                        Answer: {item?.answer}
+                      Answer: {item?.answer}
                     </Text>
                   </View>
                 )
