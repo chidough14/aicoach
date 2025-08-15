@@ -34,7 +34,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../../config/firebase';
 
 export default function CourseView() {
-  const { courseParams, courseId } = useLocalSearchParams();
+  const { courseParams, courseId, enroll } = useLocalSearchParams();
   const [course, setCourse] = useState(undefined)
   // const course = typeof courseParams === 'string'
   //   ? JSON.parse(courseParams)
@@ -74,7 +74,7 @@ export default function CourseView() {
       )}
       ListHeaderComponent={() => (
         <View>
-          <Intro course={course} />
+          <Intro course={course} enroll={enroll} />
           <View style={{ marginVertical: 5 }}>
             <Text style={{ fontFamily: 'outfit-bold', fontSize: 20 }}>
               Chapters

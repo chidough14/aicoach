@@ -5,7 +5,7 @@ import Colors from '../../constants/Colors'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { useRouter } from 'expo-router'
 
-export default function CourseList({ courseList, heading = 'Courses' }: any) {
+export default function CourseList({ courseList, heading = 'Courses', enroll = false }: any) {
   const router = useRouter()
   return (
     <View
@@ -32,7 +32,8 @@ export default function CourseList({ courseList, heading = 'Courses' }: any) {
               pathname: '/courseView/[courseId]',
               params: {
                 courseId: item?.docId,
-                courseParams: JSON.stringify(item)
+                courseParams: JSON.stringify(item),
+                enroll: enroll
               }
             })}
           >

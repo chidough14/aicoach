@@ -1,18 +1,47 @@
 import { View, Text, Image, Pressable } from 'react-native'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { imageAssets } from '../../constants/Option'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import Colors from '../../constants/Colors'
 import Button from '../Shared/Button'
 import { useRouter } from 'expo-router'
-import { extractJson } from '../../lib/utils'
+// import { extractJson } from '../../lib/utils'
+import { UserDetailContext } from '../../context/UserDetailContext'
+import { doc, setDoc } from 'firebase/firestore'
+import { db } from '../../config/firebase'
 
-export default function Intro({ course }: any) {
+export default function Intro({ course, enroll }: any) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const { userDetail, setUserDetail } = useContext(UserDetailContext)
 
   const handlePress = async () => {
-   
+
+  }
+
+  const data = {
+    ...course,
+    createdBy: userDetail?.email,
+    createdOn: new Date(),
+    enrolled: true
+  }
+
+  const onEnrollCourse = async () => {
+    const docId = Date.now().toString()
+
+    setLoading(true)
+    await setDoc(doc(db, 'Courses', docId), data)
+    console.log("Finished")
+    router.push({
+      pathname: '/courseView/[courseId]',
+      params: {
+        courseId: docId,
+        courseParams: JSON.stringify(data),
+        enroll: 'false'
+      }
+    })
+
+    setLoading(false)
   }
 
   return (
@@ -49,11 +78,22 @@ export default function Intro({ course }: any) {
 
         <Text style={{ fontFamily: 'outfit', fontSize: 18, color: Colors.GRAY }}>{course?.description}</Text>
 
-        <Button
-          text='Start Now'
-          onPress={() => {}}
-          loading={loading}
-        />
+        {
+          enroll == 'true' ? (
+            <Button
+              text='Enroll'
+              onPress={() => onEnrollCourse()}
+              loading={loading}
+            />
+          ) : (
+            <Button
+              text='Start Now'
+              onPress={() => { }}
+              loading={loading}
+            />
+          )
+        }
+
       </View>
 
       <Pressable

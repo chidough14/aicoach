@@ -39,6 +39,7 @@ const CourseListByCategory = ({ category }: any) => {
         <CourseList
           courseList={courseList}
           heading={category}
+          enroll={true}
         />
       }
     </View>
