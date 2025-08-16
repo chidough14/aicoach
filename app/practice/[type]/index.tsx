@@ -20,7 +20,7 @@ export default function PracticeTypeHomeScreen() {
 
   useEffect(() => {
     userDetail && getCourseList()
-  }, [userDetail])
+  }, [])
 
   const getCourseList = async () => {
     setLoading(true)
